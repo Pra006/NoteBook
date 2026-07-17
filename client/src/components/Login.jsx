@@ -49,7 +49,6 @@ const Login = () => {
         <p className="text-center text-gray-500 mb-6">Login to your account</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium mb-2">Email</label>
 
@@ -64,7 +63,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium mb-2">Password</label>
 
@@ -79,7 +77,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Forgot Password */}
           <div className="flex justify-end">
             <button
               type="button"
@@ -89,7 +86,6 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"

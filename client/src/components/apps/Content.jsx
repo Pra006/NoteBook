@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { httpRequest } from "../../lib/http";
+import { toast } from "react-toastify";
 
 const Content = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  console.log(id);
+
   const [formData, setFormData] = useState({
-    title: "",
+    filename: "",
     content: "",
   });
 
@@ -13,72 +20,81 @@ const Content = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    try {
+      const { data } = await httpRequest.put(`/api/note/${id}`, formData);
 
-    setFormData({
-      title: "",
-      content: "",
-    });
+      toast.success(data.message || "Note updated successfully");
+      setFormData({ filename: "", content: "" });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "An error occurred");
+    }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="mx-auto max-w-3xl rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-3xl font-bold text-gray-800">
-          Create Content
-        </h1>
+  const fetchNote = async () => {
+    try {
+      const { data } = await httpRequest.get(`/api/note/${id}`);
+      const note = data?.data;
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+      setFormData({
+        filename: note?.filename || "",
+        content: note?.content || "",
+      });
+    } catch (error) {
+     navigate("/app/notebook")
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchNote();
+    }
+  }, [id]);
+
+  return (
+    <div className="min-h-screen bg-gray-100 px-4 py-8">
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">Create Note</h1>
+
+        <p className="text-center text-gray-500 mb-6">
+          Write down your thoughts
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label
-              htmlFor="title"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Title
-            </label>
+            <label className="block text-sm font-medium mb-2">Filename</label>
 
             <input
-              id="title"
               type="text"
-              name="title"
-              value={formData.title}
+              name="filename"
+              placeholder="Enter the filename"
+              value={formData.filename}
               onChange={handleChange}
-              placeholder="Enter title..."
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
-
-   
           <div>
-            <label
-              htmlFor="content"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Content
-            </label>
+            <label className="block text-sm font-medium mb-2">Content</label>
 
             <textarea
-              id="content"
               name="content"
-              rows={8}
+              placeholder="Write your content here..."
               value={formData.content}
               onChange={handleChange}
-              placeholder="Write your content here..."
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              rows={8}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              required
             />
           </div>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition hover:bg-indigo-700"
-            >
-              Save
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Edit
+          </button>
         </form>
       </div>
     </div>
