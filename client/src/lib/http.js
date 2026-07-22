@@ -1,6 +1,6 @@
 import axios from "axios";
 export const httpRequest = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://notebook-ztxd.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },
